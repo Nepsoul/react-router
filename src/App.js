@@ -1,10 +1,12 @@
 import {
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
   Routes,
   Route,
   Link,
-  useParams,
+  //useParams,
   useNavigate,
+  Navigate,
+  useMatch,
 } from "react-router-dom";
 import { useState } from "react";
 
@@ -35,9 +37,7 @@ const Users = () => (
   </div>
 );
 
-const Note = ({ notes }) => {
-  const id = useParams().id;
-  const note = notes.find((n) => n.id === Number(id));
+const Note = ({ note }) => {
   return (
     <div>
       <h2>{note.content}</h2>
@@ -73,6 +73,8 @@ const Login = (props) => {
   );
 };
 const App = () => {
+  const match = useMatch("/notes/:id");
+
   const [notes, setNotes] = useState([
     {
       id: 1,
@@ -94,6 +96,10 @@ const App = () => {
     },
   ]);
 
+  const note = match
+    ? notes.find((note) => note.id === Number(match.params.id))
+    : null;
+
   const [user, setUser] = useState(null);
   const login = (user) => {
     setUser(user);
@@ -104,7 +110,7 @@ const App = () => {
   };
 
   return (
-    <Router>
+    <div>
       <div>
         <Link style={padding} to="/">
           home
@@ -126,13 +132,17 @@ const App = () => {
       </div>
 
       <Routes>
-        <Route path="notes/:id" element={<Note notes={notes} />} />
+        <Route path="notes/:id" element={<Note note={note} />} />
         <Route path="/notes" element={<Notes notes={notes} />} />
-        <Route path="/users" element={<Users />} />
+        {/* <Route path="/users" element={<Users />} /> */}
+        <Route
+          path="/users"
+          element={user ? <Users /> : <Navigate replace to="/login" />}
+        />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin={login} />} />
       </Routes>
-    </Router>
+    </div>
   );
 };
 
