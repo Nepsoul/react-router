@@ -4,6 +4,7 @@ import {
   Route,
   Link,
   useParams,
+  useNavigate,
 } from "react-router-dom";
 import { useState } from "react";
 
@@ -47,6 +48,30 @@ const Note = ({ notes }) => {
     </div>
   );
 };
+
+const Login = (props) => {
+  const navigate = useNavigate();
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    props.onLogin("mluukkai");
+    navigate("/");
+  };
+  return (
+    <div>
+      <h2>login</h2>
+      <form onSubmit={onSubmit}>
+        <div>
+          username: <input type="username" />
+        </div>
+        <div>
+          password: <input type="password" />
+        </div>
+        <button type="submit">login</button>
+      </form>
+    </div>
+  );
+};
 const App = () => {
   const [notes, setNotes] = useState([
     {
@@ -70,6 +95,9 @@ const App = () => {
   ]);
 
   const [user, setUser] = useState(null);
+  const login = (user) => {
+    setUser(user);
+  };
 
   const padding = {
     padding: 5,
@@ -87,6 +115,14 @@ const App = () => {
         <Link style={padding} to="/users">
           users
         </Link>
+
+        {user ? (
+          <em>{user} logged in</em>
+        ) : (
+          <Link style={padding} to="/login">
+            login
+          </Link>
+        )}
       </div>
 
       <Routes>
@@ -94,6 +130,7 @@ const App = () => {
         <Route path="/notes" element={<Notes notes={notes} />} />
         <Route path="/users" element={<Users />} />
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login onLogin={login} />} />
       </Routes>
     </Router>
   );
