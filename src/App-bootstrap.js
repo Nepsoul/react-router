@@ -9,21 +9,7 @@ import {
   useMatch,
 } from "react-router-dom";
 import { useState } from "react";
-import {
-  Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-  TextField,
-  Alert,
-  Toolbar,
-  IconButton,
-  AppBar,
-} from "@mui/material";
-import { Button } from "react-bootstrap";
+import { Table, Form, Button, Alert, Navbar, Nav } from "react-bootstrap";
 
 const Home = () => (
   <div>
@@ -42,25 +28,25 @@ const Home = () => (
     </p>
   </div>
 );
+
 const Notes = ({ notes }) => (
   <div>
     <h2>Notes</h2>
-    <TableContainer component={Paper}>
-      <Table>
-        <TableBody>
-          {notes.map((note) => (
-            <TableRow key={note.id}>
-              <TableCell>
-                <Link to={`/notes/${note.id}`}>{note.content}</Link>
-              </TableCell>
-              <TableCell>{note.user}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Table striped>
+      <tbody>
+        {notes.map((note) => (
+          <tr key={note.id}>
+            <td>
+              <Link to={`/notes/${note.id}`}>{note.content}</Link>
+            </td>
+            <td>{note.user}</td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
   </div>
 );
+
 const Users = () => (
   <div>
     {" "}
@@ -79,8 +65,10 @@ const Note = ({ note }) => {
     </div>
   );
 };
+
 const Login = (props) => {
   const navigate = useNavigate();
+
   const onSubmit = (event) => {
     event.preventDefault();
     props.onLogin("mluukkai");
@@ -89,23 +77,20 @@ const Login = (props) => {
   return (
     <div>
       <h2>login</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          <TextField label="username" />
-        </div>
-        <div>
-          <TextField label="password" type="password" />
-        </div>
-        <div>
-          <Button variant="contained" color="primary" type="submit">
+      <Form onSubmit={onSubmit}>
+        <Form.Group>
+          <Form.Label>username:</Form.Label>
+          <Form.Control type="text" name="username" />
+          <Form.Label>password:</Form.Label>
+          <Form.Control type="password" />
+          <Button variant="primary" type="submit">
             login
           </Button>
-        </div>
-      </form>
+        </Form.Group>
+      </Form>
     </div>
   );
 };
-
 const App = () => {
   const match = useMatch("/notes/:id");
 
@@ -136,6 +121,7 @@ const App = () => {
 
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
+
   const login = (user) => {
     setUser(user);
     setMessage(`Welcome ${user}`);
@@ -143,34 +129,45 @@ const App = () => {
       setMessage(null);
     }, 10000);
   };
+
   const padding = {
     padding: 5,
   };
 
   return (
-    <Container>
-      {message && <Alert severity="success">{message}</Alert>}
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-          ></IconButton>
-          <Button color="inherit">
-            <Link to="/">home</Link>
-          </Button>
-          <Button color="inherit">
-            <Link to="/notes">notes</Link>
-          </Button>
-          <Button color="inherit">
-            <Link to="/users">users</Link>
-          </Button>
-          <Button color="inherit">
-            {user ? <em>{user} logged in</em> : <Link to="/login">login</Link>}
-          </Button>
-        </Toolbar>
-      </AppBar>
+    <div className="container">
+      {message && <Alert variant="success">{message}</Alert>}
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/">
+                home
+              </Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/notes">
+                notes
+              </Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/users">
+                users
+              </Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              {user ? (
+                <em style={padding}>{user} logged in</em>
+              ) : (
+                <Link style={padding} to="/login">
+                  login
+                </Link>
+              )}
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
 
       <Routes>
         <Route path="notes/:id" element={<Note note={note} />} />
@@ -183,7 +180,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin={login} />} />
       </Routes>
-    </Container>
+    </div>
   );
 };
 
